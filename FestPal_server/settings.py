@@ -51,7 +51,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
 )
 
-ROOT_URLCONF = 'Festpal_server.urls'
+ROOT_URLCONF = 'FestPal_server.urls'
 
 TEMPLATES = [
     {
@@ -69,7 +69,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Festpal_server.wsgi.application'
+WSGI_APPLICATION = 'FestPal_server.wsgi.application'
 
 
 # Database
