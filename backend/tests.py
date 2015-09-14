@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.utils import timezone
-from  .models import Festival, InvalidInputOrDifferentCurrencyError
+from  .models import Festival, Concert, InvalidInputOrDifferentCurrencyError
 from django.core.urlresolvers import reverse
 import json
 
@@ -46,8 +46,8 @@ class FestivalMethodTests(TestCase):
         """
         festival = self.create_festival()
 
-        self.assertFalse(festival.price_is_in_range('1e', '10e'))
-        self.assertFalse(festival.price_is_in_range('1 e', '10 e'))
+        self.assertFalse(festival.price_is_in_range('4e', '10e'))
+        self.assertFalse(festival.price_is_in_range('4 e', '10 e'))
 
         festival.prices = '$25 $50 $200'
 
@@ -66,7 +66,7 @@ class FestivalMethodTests(TestCase):
 
     def test_price_is_in_range_negative_value(self):
         """
-        price_is_in_range() should throw InvalidInputOrDifferentCurrencyError
+        price_is_in_range() is to throw InvalidInputOrDifferentCurrencyError
         if any of the values provided is negative
         """
         festival = self.create_festival()
@@ -78,6 +78,43 @@ class FestivalMethodTests(TestCase):
         with self.assertRaises(InvalidInputOrDifferentCurrencyError):
             festival.price_is_in_range('-3e', '-5e')
 
+    def test_min_value_is_higher_than_max_value(self):
+        """
+        price_is_in_range() is to throw InvalidInputOrDifferentCurrencyError
+        if max_value is higher than min_value
+        """
+        festival = self.create_festival()
+
+        with self.assertRaises(InvalidInputOrDifferentCurrencyError):
+            festival.price_is_in_range('10e', '5e')
+
+    def test_only_min_value_is_defined(self):
+        """
+        price_is_in_range() is to return all results higher than min_price
+        """
+        festival = self.create_festival()
+
+        self.assertTrue(festival.price_is_in_range('5e'))
+        self.assertTrue(festival.price_is_in_range('5 e'))
+
+        festival.prices = '$3 $50 $200'
+
+        self.assertTrue(festival.price_is_in_range('$3'))
+        self.assertTrue(festival.price_is_in_range('$ 3'))
+
+        def test_only_max_value_is_defined(self):
+            """
+            price_is_in_range() is to return all results lower than max_price
+            """
+            festival = self.create_festival()
+
+            self.assertTrue(festival.price_is_in_range(max_price='100e'))
+            self.assertTrue(festival.price_is_in_range(max_price='100 e'))
+
+            festival.prices = '$3 $50 $200'
+
+            self.assertTrue(festival.price_is_in_range(max_price='$100'))
+            self.assertTrue(festival.price_is_in_range(max_price='$ 100'))
 
 class ReadMultipleFestivalsTests(TestCase):
 
@@ -103,7 +140,7 @@ class ReadMultipleFestivalsTests(TestCase):
         """
         response = self.client.post('/backend/mult/fest/', {'num': 3})
         self.assertEqual(response.status_code, 200)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
         self.assertTrue(not data)
 
     def test_less_records_available_than_requested(self):
@@ -114,7 +151,7 @@ class ReadMultipleFestivalsTests(TestCase):
         self.create_festival()
         response = self.client.post('/backend/mult/fest/', {'num': 3})
         self.assertEqual(response.status_code, 200)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(data), 1)
 
     def test_records_available_equal_or_more_than_requested(self):
@@ -127,7 +164,7 @@ class ReadMultipleFestivalsTests(TestCase):
         self.create_festival()
         response = self.client.post('/backend/mult/fest/', {'num': 3})
         self.assertEqual(response.status_code, 200)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(data), 3)
         self.create_festival()
         response = self.client.post('/backend/mult/fest/', {'num': 3})
@@ -145,7 +182,7 @@ class ReadMultipleFestivalsTests(TestCase):
             'country': 'test',
             'city': 'asdf'
         })
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(data), 0)
 
     def test_filter_satisfied_results(self):
@@ -156,14 +193,16 @@ class ReadMultipleFestivalsTests(TestCase):
         self.create_festival()
         fest1 = self.create_festival()
         fest1.city='testest'
+        fest1.save()
         fest2 = self.create_festival()
         fest2.prices='1000e'
+        fest2.save()
         response = self.client.post('/backend/mult/fest/', {
             'num': 3,
             'min_price': '20e',
             'max_price': '60e'
         })
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(data), 2)
 
 class ReadFestivalConcertsTests(TestCase):
@@ -187,8 +226,8 @@ class ReadFestivalConcertsTests(TestCase):
     def create_concert(festival):
         return Concert.objects.create(festival = festival,
                                       artist = 'test',
-                                      start = timezone.now() + timedelta(days=2, hours=1),
-                                      end = timezone.now() + timedelta(days=2, hours=2),
+                                      start = timezone.now() + timezone.timedelta(days=2, hours=1),
+                                      end = timezone.now() + timezone.timedelta(days=2, hours=2),
                                       first_uploaded = timezone.now(),
                                       last_modified = timezone.now()
         )
@@ -200,7 +239,7 @@ class ReadFestivalConcertsTests(TestCase):
         """
         response = self.client.post('/backend/mult/conc/', {'id': 0})
         self.assertEqual(response.status_code, 200)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
         self.assertTrue(not data)
 
     def test_empty_festival(self):
@@ -208,21 +247,21 @@ class ReadFestivalConcertsTests(TestCase):
         read_festival_concerts() is to return an empty JSON data document
         if festival is found but empty
         """
-        self.create_festival()
-        response = self.client.post('/backend/mult/conc/', {'id': 0})
+        festival = self.create_festival()
+        response = self.client.post('/backend/mult/conc/', {'id': festival.pk })
         self.assertEqual(response.status_code, 200)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
         self.assertTrue(not data)
 
     def test_valid_festival(self):
         """
         read_festival_concerts() is to return all concerts in the festival
         """
-        self.create_festival()
-        self.create_concert(0)
-        self.create_concert(0)
-        self.create_concert(0)
-        response = self.client.post('/backend/mult/conc/', {'id': 0})
+        festival = self.create_festival()
+        self.create_concert(festival)
+        self.create_concert(festival)
+        self.create_concert(festival)
+        response = self.client.post('/backend/mult/conc/', {'id': festival.pk})
         self.assertEqual(response.status_code, 200)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(data), 3)
