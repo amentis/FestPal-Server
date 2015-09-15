@@ -1,8 +1,10 @@
-from django.db import models
 import re
 
+from django.db import models
+
+
 class Client(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length = 30, unique = True)
     read_access = models.BooleanField(default=True)
     write_access = models.BooleanField(default=False)
     delete_access = models.BooleanField(default=False)
@@ -12,7 +14,7 @@ class Client(models.Model):
         return self.name
 
 class Festival(models.Model):
-    name = models.CharField(max_length=400)
+    name = models.CharField(max_length = 400, unique = True)
     description = models.CharField(max_length=800, blank=True)
     country = models.CharField(max_length=50, blank=True)
     city = models.CharField(max_length=90, blank=True)
@@ -33,19 +35,21 @@ class Festival(models.Model):
     def price_is_in_range(self, min_price=None, max_price=None):
         if min_price==None and max_price==None:
             raise ValueError("Either min_price or max_price should be defined")
+        min_price_formatted = []
         if min_price != None:
             min_price_formatted = self._separate_value_from_currency(min_price)
             if min_price_formatted == []:
                 raise InvalidInputOrDifferentCurrencyError('Invalid min_price.')
             if min_price_formatted[0] < 0:
                 raise InvalidInputOrDifferentCurrencyError('Negative min_price.')
+        max_price_formatted = []
         if max_price != None:
             max_price_formatted = self._separate_value_from_currency(max_price)
             if max_price_formatted == []:
                 raise InvalidInputOrDifferentCurrencyError('Invalid max_price')
             if max_price_formatted[0] < 0:
                 raise InvalidInputOrDifferentCurrencyError('Negative max_price')
-        if min_price != None and max_price != None:
+        if min_price_formatted != None and max_price_formatted != None:
             if min_price_formatted[1] != max_price_formatted[1]:
                 raise InvalidInputOrDifferentCurrencyError('min_price and max_price currency mismatch')
             if min_price_formatted[0] > max_price_formatted[0]:
@@ -85,7 +89,7 @@ class InvalidInputOrDifferentCurrencyError(Exception):
     pass
 
 class Concert(models.Model):
-    festival = models.ForeignKey(Festival)
+    festival = models.ForeignKey(Festival, unique = True)
     artist = models.CharField(max_length=500)
     scene = models.SmallIntegerField(default=1)
     day = models.SmallIntegerField(default=1)

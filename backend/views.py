@@ -1,6 +1,8 @@
-from django.http import HttpResponse
-from .models import Festival, Concert
 import json
+
+from django.http import HttpResponse
+
+from .models import Festival
 
 
 def read_multiple_festivals(request):
@@ -96,11 +98,12 @@ def read_concert_info(request):
 def write_concert_info(request):
     return HttpResponse('[Error] writing concert info')
 
-def delete_concert(request):
-    return HttpResponse('[Error] deleting concert')
 
 def delete_festival(request):
     return HttpResponse('[Error] deleting festival')
+
+def delete_concert(request):
+    return HttpResponse('[Error] deleting concert')
 
 def vote(request):
     return HttpResponse('[Error] voting')
