@@ -1,10 +1,39 @@
 import json
 
 from django.http import HttpResponse
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 from .models import Festival
 
 
+def not_logged_notify(request):
+    return HttpResponse('Not logged')
+
+
+def log_in(request):
+    if 'username' not in request.POST.keys():
+        return HttpResponse('No username')
+    username = request.POST['username']
+
+    if 'password' not in request.POST.keys():
+        return HttpResponse('No password')
+    password = request.POST('password')
+
+    user = authenticate(username = username, password = password)
+    if user is None:
+        return HttpResponse('Invalid login')
+    if not user.is_active:
+        return HttpResponse('Disabled account')
+    login(request, user)
+
+
+def log_out(request):
+    logout(request)
+    return HttpResponse('Logged out')
+
+
+@login_required(redirect_field_name='', login_url='/backend/login/')
 def read_multiple_festivals(request):
     data = []
 
@@ -68,6 +97,8 @@ def read_multiple_festivals(request):
                      'last_modified': str(festival.last_modified)})
     return HttpResponse(json.dumps(data), content_type='application/json')
 
+
+@login_required(redirect_field_name='', login_url='/backend/login/')
 def read_festival_concerts(request):
     data = []
     try:
@@ -86,24 +117,37 @@ def read_festival_concerts(request):
         })
     return HttpResponse(json.dumps(data), content_type = 'application/json')
 
+
+@login_required(redirect_field_name='', login_url='/backend/login/')
 def read_festival_info(request):
     return HttpResponse('[Error] reading festival info')
 
+
+@login_required(redirect_field_name='', login_url='/backend/login/')
 def write_festival_info(request):
     return HttpResponse('[Error] writing festival info')
 
+
+@login_required(redirect_field_name='', login_url='/backend/login/')
 def read_concert_info(request):
     return HttpResponse('[Error] reading concert info')
 
+
+@login_required(redirect_field_name='', login_url='/backend/login/')
 def write_concert_info(request):
     return HttpResponse('[Error] writing concert info')
 
 
+@login_required(redirect_field_name='', login_url='/backend/login/')
 def delete_festival(request):
     return HttpResponse('[Error] deleting festival')
 
+
+@login_required(redirect_field_name='', login_url='/backend/login/')
 def delete_concert(request):
     return HttpResponse('[Error] deleting concert')
 
+
+@login_required(redirect_field_name='', login_url='/backend/login/')
 def vote(request):
     return HttpResponse('[Error] voting')

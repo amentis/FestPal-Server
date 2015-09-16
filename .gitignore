@@ -57,8 +57,11 @@ docs/_build/
 target/
 
 # Django
-backend/migrations
+backend/migrations/
 
 # FestPal Django secret data
 secret_key
 sql.cnf
+
+# PyCharm
+.idea/dictionaries/
