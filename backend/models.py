@@ -23,17 +23,17 @@ class Client(models.Model):
 
 
 class Festival(models.Model):
-    name = models.CharField(max_length = 400, unique = True)
+    name = models.CharField(max_length = 255, unique = True)
     description = models.CharField(max_length=800, blank=True)
     country = models.CharField(max_length=50, blank=True)
     city = models.CharField(max_length=90, blank=True)
     address = models.CharField(max_length=200, blank=True)
     genre = models.CharField(max_length=100, blank=True)
     prices = models.CharField(max_length=400, blank=True)
-    uploader = models.OneToOneField(User)
+    uploader = models.ForeignKey(User)
     official = models.BooleanField(default=False)
-    downloads = models.ManyToManyField(User)
-    voters = models.ManyToManyField(User)
+    downloads = models.ManyToManyField(User, related_name = '+')
+    voters = models.ManyToManyField(User, related_name = '+')
     rank = models.SmallIntegerField(default=0)
     first_uploaded = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now_add=True)
@@ -64,11 +64,19 @@ class Festival(models.Model):
                 raise InvalidInputOrDifferentCurrencyError('Invalid max_price')
             if max_price_formatted[0] < 0:
                 raise InvalidInputOrDifferentCurrencyError('Negative max_price')
-        if min_price_formatted is not None and max_price_formatted is not None:
+        if min_price_formatted != [] and max_price_formatted != []:
             if min_price_formatted[1] != max_price_formatted[1]:
                 raise InvalidInputOrDifferentCurrencyError('min_price and max_price currency mismatch')
             if min_price_formatted[0] > max_price_formatted[0]:
                 raise InvalidInputOrDifferentCurrencyError('min_price higher than max_price')
+        if self.prices == '':
+            if min_price is not None:
+                if min_price_formatted[0] > 0:
+                    return False
+                else:
+                    return True
+            else:
+                return True
         for price in self.prices.split(" "):
             price_formatted = self._separate_value_from_currency(price)
             if min_price is not None:
@@ -107,7 +115,7 @@ class InvalidInputOrDifferentCurrencyError(Exception):
 
 class Concert(models.Model):
     festival = models.ForeignKey(Festival)
-    artist = models.CharField(max_length=500, unique = True)
+    artist = models.CharField(max_length = 255, unique = True)
     scene = models.SmallIntegerField(default=1)
     day = models.SmallIntegerField(default=1)
     start = models.DateTimeField()

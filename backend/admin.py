@@ -2,9 +2,11 @@ from django.contrib import admin
 
 from .models import Client, Concert, Festival
 
+
 class ClientAdmin(admin.ModelAdmin):
     fields = ['name', 'read_access', 'write_access', 'delete_access', 'vote_access']
     list_display = ('name', 'read_access', 'write_access', 'delete_access', 'vote_access')
+
 
 class ConcertAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -13,6 +15,7 @@ class ConcertAdmin(admin.ModelAdmin):
         ('Modification info', {'fields': ['first_uploaded', 'last_modified']}),
     ]
     list_display = ('artist', 'festival', 'start', 'last_modified')
+
 
 class FestivalAdmin(admin.ModelAdmin):
     fieldsets = [
