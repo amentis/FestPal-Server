@@ -64,4 +64,4 @@ secret_key
 sql.cnf
 
 # PyCharm
-.idea/dictionaries/
+.idea/
