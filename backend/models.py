@@ -32,11 +32,10 @@ class Festival(models.Model):
     prices = models.CharField(max_length=400, blank=True)
     uploader = models.ForeignKey(User)
     official = models.BooleanField(default=False)
-    downloads = models.ManyToManyField(User, related_name = '+')
-    voters = models.ManyToManyField(User, related_name = '+')
-    rank = models.SmallIntegerField(default=0)
-    first_uploaded = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now_add=True)
+    downloads = models.ManyToManyField(User, related_name = '+', blank = True)
+    voters = models.ManyToManyField(User, related_name = '+', blank = True)
+    first_uploaded = models.DateTimeField('first_uploaded', auto_now_add = True)
+    last_modified = models.DateTimeField('last_uploaded', auto_now = True)
 
     def __str__(self):
         return self.name
@@ -121,7 +120,7 @@ class Concert(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField()
     first_uploaded = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now = True)
 
     def __str__(self):
         return self.artist

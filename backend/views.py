@@ -101,7 +101,6 @@ def read_multiple_festivals(request):
                      'official': festival.official,
                      'downloads': festival.downloads.count(),
                      'voters': festival.voters.count(),
-                     'rank': festival.rank,
                      'first_uploaded': str(festival.first_uploaded),
                      'last_modified': str(festival.last_modified)})
     return HttpResponse(json.dumps(data), content_type = 'application/json')
@@ -176,7 +175,6 @@ def read_festival_info(request):
                 official = festival.official,
                 downloads = festival.downloads.count(),
                 voters = festival.voters.count(),
-                rank = festival.rank,
                 first_uploaded = str(festival.first_uploaded),
                 last_modified = str(festival.last_modified)
                 )
