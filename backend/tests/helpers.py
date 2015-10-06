@@ -11,7 +11,7 @@ def create_festival(name, uploader):
                     city = 'test',
                     address = 'test',
                     genre = 'test',
-                    uploader = uploader)
+                    owner = uploader)
 
 
 def create_concert(festival, artist):

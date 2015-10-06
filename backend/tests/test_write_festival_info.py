@@ -21,7 +21,6 @@ class WriteFestivalInfoTests(TestCase):
                                                          'address': 'test',
                                                          'genre': 'test',
                                                          'prices': '0e',
-                                                         'uploader': 'test',
                                                          'official': False})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Client name not provided', response.content.decode('utf-8'))
@@ -45,7 +44,6 @@ class WriteFestivalInfoTests(TestCase):
                                                          'address': 'test',
                                                          'genre': 'test',
                                                          'prices': '0e',
-                                                         'uploader': 'test',
                                                          'official': False})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Permission not granted', response.content.decode('utf-8'))
@@ -70,7 +68,6 @@ class WriteFestivalInfoTests(TestCase):
                                      'address': 'test',
                                      'genre': 'test',
                                      'prices': '0e',
-                                     'uploader': 'test',
                                      'official': False})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('OK', response.content.decode('utf-8'))
@@ -112,7 +109,6 @@ class WriteFestivalInfoTests(TestCase):
                                      'address': 'test',
                                      'genre': 'test',
                                      'prices': '0e',
-                                     'uploader': 'test',
                                      'official': False})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Incorrect input', response.content.decode('utf-8'))

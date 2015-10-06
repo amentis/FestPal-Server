@@ -53,7 +53,7 @@ class UpdateConcertInfoTests(TestCase):
         client.save()
 
         response = self.client.post('/backend/u/conc/', {'client': 'test',
-                                                         'fest': festival.pk, 'artist': 'test'})
+                                                         'festival': festival.pk, 'artist': 'test'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Permission not granted', response.content.decode('utf-8'))
 
@@ -78,7 +78,7 @@ class UpdateConcertInfoTests(TestCase):
         concert3 = create_concert(festival, 'testestest')
         concert3.save()
         response = self.client.post('/backend/u/conc/', {'client': 'test',
-                                                         'fest': festival.pk, 'artist': 'tset'})
+                                                         'festival': festival.pk, 'artist': 'tset'})
         self.assertEqual('Concert Not Found', response.content.decode('utf-8'))
 
     def test_invalid_fields(self):
@@ -98,9 +98,9 @@ class UpdateConcertInfoTests(TestCase):
 
         response = self.client.post('/backend/u/conc/',
                                     {'client': 'test',
-                                     'fest': festival.pk,
-                                     'artist': 'test',
-                                     'new_artist':
+                                     'festival': festival.pk,
+                                     'old_artist': 'test',
+                                     'artist':
                                          'testtestsetsetsetsetse\
                                          tsetsetsetsetsetsetsetsetsetsetsetsetsetsetsetsetsetsetsetstsetsetsetset\
                                          testsetsetsetestestsetsetsetstsetsetsetsetsetsetsetsetsetsetsetsetsetstset\
@@ -127,15 +127,15 @@ class UpdateConcertInfoTests(TestCase):
 
         response = self.client.post('/backend/u/conc/',
                                     {'client': 'test',
-                                     'fest': festival.pk,
-                                     'artist': 'test',
-                                     'scene': 2,
-                                     'new_artist': 'tset'
+                                     'festival': festival.pk,
+                                     'old_artist': 'test',
+                                     'stage': 2,
+                                     'artist': 'tset'
                                      })
 
         self.assertEqual(response.status_code, 200)
         response_string = response.content.decode('utf-8')
         self.assertTrue('artist:tset' in response_string)
-        self.assertTrue('scene:2' in response_string)
+        self.assertTrue('stage:2' in response_string)
         self.assertEqual(3, len(response_string.split('\n')))
         self.assertEqual(1, Concert.objects.filter(festival = festival, artist = 'tset').count())

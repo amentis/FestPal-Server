@@ -52,7 +52,7 @@ class DeleteConcertTests(TestCase):
         client.delete_access = True
         client.save()
         response = self.client.post('/backend/d/conc/', {'client': 'test',
-                                                         'fest': festival.pk, 'artist': 'test'})
+                                                         'festival': festival.pk, 'artist': 'test'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Permission not granted', response.content.decode('utf-8'))
 
@@ -72,7 +72,8 @@ class DeleteConcertTests(TestCase):
         create_concert(festival, 'test')
         create_concert(festival, 'testest')
         create_concert(festival, 'testestest')
-        response = self.client.post('/backend/d/conc/', {'client': 'test', 'fest': festival.pk + 1, 'artist': 'asdf'})
+        response = self.client.post('/backend/d/conc/',
+                                    {'client': 'test', 'festival': festival.pk + 1, 'artist': 'asdf'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Concert Not Found', response.content.decode('utf-8'))
         self.assertEqual(3, Concert.objects.all().count())
@@ -94,7 +95,7 @@ class DeleteConcertTests(TestCase):
         create_concert(festival, 'testest')
         create_concert(festival, 'testestest')
         response = self.client.post('/backend/d/conc/', {'client': 'test',
-                                                         'fest': festival.pk, 'artist': 'test'})
+                                                         'festival': festival.pk, 'artist': 'test'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('OK', response.content.decode('utf-8'))
         self.assertEqual(2, Concert.objects.all().count())

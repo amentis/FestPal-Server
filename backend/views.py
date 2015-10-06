@@ -71,9 +71,6 @@ def read_multiple_festivals(request):
         if 'official' in request.POST.keys():
             if bool(request.POST['official']) != festival.official:
                 continue
-        if 'rank' in request.POST.keys():
-            if int(request.POST['rank']) > festival.rank:
-                continue
         if 'name' in request.POST.keys():
             if request.POST['name'] not in festival.name:
                 continue
@@ -111,10 +108,10 @@ def read_multiple_festivals(request):
                      'address': festival.address,
                      'genre': festival.genre,
                      'prices': festival.prices,
-                     'uploader': festival.uploader.username,
+                     'uploader': festival.owner.username,
                      'official': festival.official,
                      'downloads': festival.downloads.count(),
-                     'voters': festival.voters.count(),
+                     'votes': festival.voters.count(),
                      'first_uploaded': str(festival.first_uploaded),
                      'last_modified': str(festival.last_modified)})
     return HttpResponse(json.dumps(data), content_type = 'application/json')
@@ -146,7 +143,7 @@ def read_festival_concerts(request):
     for concert in festival.concert_set.all():
         data.append({'festival': festival.pk,
                      'artist': concert.artist,
-                     'scene': concert.scene,
+                     'stage': concert.stage,
                      'day': concert.day,
                      'start': str(concert.start),
                      'end': str(concert.end),
@@ -185,7 +182,7 @@ def read_festival_info(request):
                 address = festival.address,
                 genre = festival.genre,
                 prices = festival.prices,
-                uploader = festival.uploader.username,
+                uploader = festival.owner.username,
                 official = festival.official,
                 downloads = festival.downloads.count(),
                 voters = festival.voters.count(),
@@ -236,7 +233,7 @@ def write_festival_info(request):
             return HttpResponse('Incorrect input')
 
     festival = Festival(name = request.POST['name'],
-                        uploader = request.user)
+                        owner = request.user)
     if 'description' in request.POST.keys():
         festival.description = request.POST['description']
     if 'country' in request.POST.keys():
@@ -276,7 +273,7 @@ def update_festival_info(request):
         festival = Festival.objects.get(pk = request.POST['id'])
     except (KeyError, Festival.DoesNotExist):
         return HttpResponse('Invalid Festival ID')
-    if request.user != festival.uploader:
+    if request.user != festival.owner:
         return HttpResponse('Permission not granted')
     result = ''
     max_lengths = dict(name = 255, description = 800, country = 50,
@@ -302,17 +299,17 @@ def read_concert_info(request):
     if not client_has_permission(request.POST['client'], 'read'):
         return HttpResponse('Permission not granted')
 
-    if 'fest' not in request.POST.keys():
+    if 'festival' not in request.POST.keys():
         return HttpResponse('Invalid Festival ID')
 
-    if 'fest' is None:
+    if 'festival' is None:
         return HttpResponse('Invalid Festival ID')
 
-    if not request.POST['fest'].isdigit():
+    if not request.POST['festival'].isdigit():
         return HttpResponse('Invalid Festival ID')
 
     try:
-        festival = Festival.objects.get(pk = request.POST['fest'])
+        festival = Festival.objects.get(pk = request.POST['festival'])
     except (KeyError, Festival.DoesNotExist):
         return HttpResponse('Invalid Festival ID')
 
@@ -328,7 +325,7 @@ def read_concert_info(request):
 
     data = dict(festival = festival.pk,
                 artist = concert.artist,
-                scene = concert.scene,
+                scene = concert.stage,
                 day = concert.day,
                 start = str(concert.start),
                 end = str(concert.end),
@@ -360,8 +357,8 @@ def write_concert_info(request):
     if Concert.objects.filter(artist = request.POST['artist']).count() != 0:
         return HttpResponse('Artist exists')
 
-    if 'scene' in request.POST.keys():
-        if not request.POST['scene'].isdigit():
+    if 'stage' in request.POST.keys():
+        if not request.POST['stage'].isdigit():
             return HttpResponse('Incorrect input')
 
     if 'day' in request.POST.keys():
@@ -392,8 +389,8 @@ def write_concert_info(request):
                       artist = request.POST['artist'],
                       start = start,
                       end = end)
-    if 'scene' in request.POST.keys():
-        concert.scene = request.POST['scene']
+    if 'stage' in request.POST.keys():
+        concert.stage = request.POST['stage']
 
     if 'day' in request.POST.keys():
         concert.day = request.POST['day']
@@ -411,41 +408,41 @@ def update_concert_info(request):
     if not client_has_permission(request.POST['client'], 'write'):
         return HttpResponse('Permission not granted')
 
-    if 'fest' not in request.POST.keys():
+    if 'festival' not in request.POST.keys():
         return HttpResponse('Concert Not Found')
 
-    if 'fest' is None:
+    if 'festival' is None:
         return HttpResponse('Concert Not Found')
 
-    if not request.POST['fest'].isdigit():
+    if not request.POST['festival'].isdigit():
         return HttpResponse('Concert Not Found')
 
     try:
-        festival = Festival.objects.get(pk = request.POST['fest'])
+        festival = Festival.objects.get(pk = request.POST['festival'])
     except (KeyError, Festival.DoesNotExist):
         return HttpResponse('Concert Not Found')
-    if request.user != festival.uploader:
+    if request.user != festival.owner:
         return HttpResponse('Permission not granted')
-    if 'artist' not in request.POST.keys():
+    if 'old_artist' not in request.POST.keys():
         return HttpResponse('Concert Not Found')
 
     try:
-        concert = festival.concert_set.get(artist = request.POST['artist'])
+        concert = festival.concert_set.get(artist = request.POST['old_artist'])
     except (KeyError, Concert.DoesNotExist):
         return HttpResponse('Concert Not Found')
     result = ''
-    if 'new_artist' in request.POST.keys():
-        if len(request.POST['new_artist']) > 255:
+    if 'artist' in request.POST.keys():
+        if len(request.POST['artist']) > 255:
             return HttpResponse('Incorrect input')
         else:
-            concert.artist = request.POST['new_artist']
-            result += 'artist:{}\n'.format(request.POST['new_artist'])
-    if 'scene' in request.POST.keys():
-        if not request.POST['scene'].isdigit():
+            concert.artist = request.POST['artist']
+            result += 'artist:{}\n'.format(request.POST['artist'])
+    if 'stage' in request.POST.keys():
+        if not request.POST['stage'].isdigit():
             return HttpResponse('Incorrect input')
         else:
-            concert.scene = int(request.POST['scene'])
-            result += 'scene:{}\n'.format(request.POST['scene'])
+            concert.stage = int(request.POST['stage'])
+            result += 'stage:{}\n'.format(request.POST['stage'])
     if 'day' in request.POST.keys():
         if not request.POST['day'].isdigit():
             return HttpResponse('Incorrect input')
@@ -495,7 +492,7 @@ def delete_festival(request):
         festival = Festival.objects.get(pk = request.POST['id'])
     except (KeyError, Festival.DoesNotExist):
         return HttpResponse('Invalid Festival ID')
-    if request.user != festival.uploader:
+    if request.user != festival.owner:
         return HttpResponse('Permission not granted')
     festival.delete()
     return HttpResponse('OK')
@@ -509,20 +506,20 @@ def delete_concert(request):
     if not client_has_permission(request.POST['client'], 'delete'):
         return HttpResponse('Permission not granted')
 
-    if 'fest' not in request.POST.keys():
+    if 'festival' not in request.POST.keys():
         return HttpResponse('Concert Not Found')
 
-    if 'fest' is None:
+    if 'festival' is None:
         return HttpResponse('Concert Not Found')
 
-    if not request.POST['fest'].isdigit():
+    if not request.POST['festival'].isdigit():
         return HttpResponse('Concert Not Found')
 
     try:
-        festival = Festival.objects.get(pk = request.POST['fest'])
+        festival = Festival.objects.get(pk = request.POST['festival'])
     except (KeyError, Festival.DoesNotExist):
         return HttpResponse('Concert Not Found')
-    if request.user != festival.uploader:
+    if request.user != festival.owner:
         return HttpResponse('Permission not granted')
     if 'artist' not in request.POST.keys():
         return HttpResponse('Concert Not Found')

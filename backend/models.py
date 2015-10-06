@@ -44,7 +44,7 @@ class Festival(models.Model):
     address = models.CharField(max_length=200, blank=True)
     genre = models.CharField(max_length=100, blank=True)
     prices = models.CharField(max_length=400, blank=True)
-    uploader = models.ForeignKey(User)
+    owner = models.ForeignKey(User)
     official = models.BooleanField(default=False)
     downloads = models.ManyToManyField(User, related_name = '+', blank = True)
     voters = models.ManyToManyField(User, related_name = '+', blank = True)
@@ -129,7 +129,7 @@ class InvalidInputOrDifferentCurrencyError(Exception):
 class Concert(models.Model):
     festival = models.ForeignKey(Festival)
     artist = models.CharField(max_length = 255, unique = True)
-    scene = models.SmallIntegerField(default=1)
+    stage = models.SmallIntegerField(default = 1)
     day = models.SmallIntegerField(default=1)
     start = models.DateTimeField()
     end = models.DateTimeField()

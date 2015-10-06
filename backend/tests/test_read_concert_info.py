@@ -54,7 +54,7 @@ class ReadConcertInfoTests(TestCase):
 
         festival = create_festival('test', create_user())
         festival.save()
-        response = self.client.post('/backend/r/conc/', {'client': 'test', 'fest': festival.pk, 'artist': 'test'})
+        response = self.client.post('/backend/r/conc/', {'client': 'test', 'festival': festival.pk, 'artist': 'test'})
         data = json.loads(response.content.decode('utf-8'))
         self.assertFalse(data)
 
@@ -69,7 +69,7 @@ class ReadConcertInfoTests(TestCase):
         festival.save()
         concert = create_concert(festival, 'test')
         concert.save()
-        response = self.client.post('/backend/r/conc/', {'client': 'test', 'fest': festival.pk, 'artist': 'test'})
+        response = self.client.post('/backend/r/conc/', {'client': 'test', 'festival': festival.pk, 'artist': 'test'})
         data = json.loads(response.content.decode('utf-8'))
         self.assertTrue(data)
         self.assertTrue('test', data['artist'])

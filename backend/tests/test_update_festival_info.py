@@ -98,7 +98,7 @@ class UpdateFestivalInfoTests(TestCase):
                                      'address': 'test',
                                      'genre': 'test',
                                      'prices': '0e',
-                                     'uploader': 'test',
+                                     'owner': 'test',
                                      'official': False})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Incorrect input', response.content.decode('utf-8'))

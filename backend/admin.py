@@ -11,7 +11,7 @@ class ClientAdmin(admin.ModelAdmin):
 class ConcertAdmin(admin.ModelAdmin):
     readonly_fields = ('last_modified', 'first_uploaded')
     fieldsets = [
-        (None, {'fields': ['festival', 'artist', 'day', 'scene']}),
+        (None, {'fields': ['festival', 'artist', 'day', 'stage']}),
         ('From/to', {'fields': ['start', 'end']}),
         ('Modification info', {'fields': ['first_uploaded', 'last_modified']}),
     ]
