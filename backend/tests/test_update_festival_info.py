@@ -102,7 +102,7 @@ class UpdateFestivalInfoTests(TestCase):
                                      'official': False})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Incorrect input', response.content.decode('utf-8'))
-        festival = Festival.objects.get(pk = festival.pk)
+        festival = Festival.objects.get(pk=festival.pk)
         self.assertEqual('test', festival.country)
 
     def test_correct_input(self):
@@ -131,5 +131,5 @@ class UpdateFestivalInfoTests(TestCase):
         self.assertTrue('city:testest\n' in response_string)
         self.assertTrue('description:testestest\n' in response_string)
         self.assertEqual(3, len(response_string.split('\n')))
-        festival = Festival.objects.get(pk = festival.pk)
+        festival = Festival.objects.get(pk=festival.pk)
         self.assertEqual('testest', festival.city)

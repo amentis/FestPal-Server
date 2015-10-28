@@ -12,8 +12,8 @@ class FestivalMethodTests(TestCase):
         """
         festival = create_festival('test', create_user())
 
-        self.assertTrue(festival.price_is_in_range(max_price = '$10'))
-        self.assertFalse(festival.price_is_in_range(min_price = '5e'))
+        self.assertTrue(festival.price_is_in_range(max_price='$10'))
+        self.assertFalse(festival.price_is_in_range(min_price='5e'))
         self.assertFalse(festival.price_is_in_range('5e', '10e'))
 
     def test_price_is_in_range_correct_input_in_range(self):
@@ -120,11 +120,11 @@ class FestivalMethodTests(TestCase):
         festival.prices = '3e 50e 200e'
         festival.save()
 
-        self.assertTrue(festival.price_is_in_range(max_price = '100e'))
-        self.assertTrue(festival.price_is_in_range(max_price = '100 e'))
+        self.assertTrue(festival.price_is_in_range(max_price='100e'))
+        self.assertTrue(festival.price_is_in_range(max_price='100 e'))
 
         festival.prices = '$3 $50 $200'
         festival.save()
 
-        self.assertTrue(festival.price_is_in_range(max_price = '$100'))
-        self.assertTrue(festival.price_is_in_range(max_price = '$ 100'))
+        self.assertTrue(festival.price_is_in_range(max_price='$100'))
+        self.assertTrue(festival.price_is_in_range(max_price='$ 100'))

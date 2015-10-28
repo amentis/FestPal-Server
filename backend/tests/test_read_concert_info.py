@@ -15,7 +15,7 @@ class ReadConcertInfoTests(TestCase):
 
         login(self.client)
 
-        response = self.client.post('/backend/r/conc/', {'fest': 0, 'artist': 'test'})
+        response = self.client.post('/backend/r/conc/', {'id': 0})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content.decode('utf-8'), 'Client name not provided')
 
@@ -30,20 +30,9 @@ class ReadConcertInfoTests(TestCase):
         client = create_client('test')
         client.read_access = False
         client.save()
-        response = self.client.post('/backend/r/conc/', {'client': 'test', 'fest': 0, 'artist': 'test'})
+        response = self.client.post('/backend/r/conc/', {'client': 'test', 'artist': 0})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content.decode('utf-8'), 'Permission not granted')
-
-    def test_invalid_festival_id(self):
-        """
-        read_concert_info() is to return "Invalid Festival ID" if no festival with the supplied id is found
-        """
-
-        login(self.client)
-
-        response = self.client.post('/backend/r/conc/', {'client': 'test', 'fest': 0, 'artist': 'test'})
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual('Invalid Festival ID', response.content.decode('utf-8'))
 
     def test_no_concert_found(self):
         """
@@ -54,7 +43,7 @@ class ReadConcertInfoTests(TestCase):
 
         festival = create_festival('test', create_user())
         festival.save()
-        response = self.client.post('/backend/r/conc/', {'client': 'test', 'festival': festival.pk, 'artist': 'test'})
+        response = self.client.post('/backend/r/conc/', {'client': 'test', 'artist': 0})
         data = json.loads(response.content.decode('utf-8'))
         self.assertFalse(data)
 
@@ -69,7 +58,7 @@ class ReadConcertInfoTests(TestCase):
         festival.save()
         concert = create_concert(festival, 'test')
         concert.save()
-        response = self.client.post('/backend/r/conc/', {'client': 'test', 'festival': festival.pk, 'artist': 'test'})
+        response = self.client.post('/backend/r/conc/', {'client': 'test', 'id': concert.pk})
         data = json.loads(response.content.decode('utf-8'))
         self.assertTrue(data)
         self.assertTrue('test', data['artist'])

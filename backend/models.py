@@ -21,12 +21,12 @@ from django.contrib.auth.models import User
 class Profile(models.Model):
     user = models.OneToOneField(User)
     representative = models.BooleanField(default=False)
-    country = models.CharField(max_length = 50, blank = True)
-    city = models.CharField(max_length = 90, blank = True)
+    country = models.CharField(max_length=50, blank=True)
+    city = models.CharField(max_length=90, blank=True)
 
 
 class Client(models.Model):
-    name = models.CharField(max_length = 30, unique = True)
+    name = models.CharField(max_length=30, unique=True)
     read_access = models.BooleanField(default=True)
     write_access = models.BooleanField(default=False)
     delete_access = models.BooleanField(default=False)
@@ -37,7 +37,7 @@ class Client(models.Model):
 
 
 class Festival(models.Model):
-    name = models.CharField(max_length = 255, unique = True)
+    name = models.CharField(max_length=255, unique=True)
     description = models.CharField(max_length=800, blank=True)
     country = models.CharField(max_length=50, blank=True)
     city = models.CharField(max_length=90, blank=True)
@@ -46,10 +46,10 @@ class Festival(models.Model):
     prices = models.CharField(max_length=400, blank=True)
     owner = models.ForeignKey(User)
     official = models.BooleanField(default=False)
-    downloads = models.ManyToManyField(User, related_name = '+', blank = True)
-    voters = models.ManyToManyField(User, related_name = '+', blank = True)
-    first_uploaded = models.DateTimeField('first_uploaded', auto_now_add = True)
-    last_modified = models.DateTimeField('last_uploaded', auto_now = True)
+    downloads = models.ManyToManyField(User, related_name='+', blank=True)
+    voters = models.ManyToManyField(User, related_name='+', blank=True)
+    first_uploaded = models.DateTimeField('first_uploaded', auto_now_add=True)
+    last_modified = models.DateTimeField('last_uploaded', auto_now=True)
 
     def __str__(self):
         return self.name
@@ -128,13 +128,13 @@ class InvalidInputOrDifferentCurrencyError(Exception):
 
 class Concert(models.Model):
     festival = models.ForeignKey(Festival)
-    artist = models.CharField(max_length = 255, unique = True)
-    stage = models.SmallIntegerField(default = 1)
+    artist = models.CharField(max_length=255, unique=True)
+    stage = models.SmallIntegerField(default=1)
     day = models.SmallIntegerField(default=1)
     start = models.DateTimeField()
     end = models.DateTimeField()
     first_uploaded = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now = True)
+    last_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.artist
@@ -148,7 +148,7 @@ def client_has_permission(name, permission):
     :param permission: permission type requested (read, write, delete or vote)
     :return: True if client has permission, False otherwise
     """
-    if permission != 'read' and permission != 'write'\
+    if permission != 'read' and permission != 'write' \
             and permission != 'delete' and permission != 'vote':
         raise InvalidPermissionStringError('Permission %s not recognised! Acceptable values:'
                                            'read, write, error, vote', name)

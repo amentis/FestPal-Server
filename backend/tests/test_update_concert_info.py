@@ -14,7 +14,7 @@ class UpdateConcertInfoTests(TestCase):
 
         login(self.client)
 
-        response = self.client.post('/backend/u/conc/', {'fest': 3})
+        response = self.client.post('/backend/u/conc/', {'id': 3})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Client name not provided', response.content.decode('utf-8'))
 
@@ -29,7 +29,7 @@ class UpdateConcertInfoTests(TestCase):
         client = create_client('test')
         client.write_access = False
         client.save()
-        response = self.client.post('/backend/u/conc/', {'client': 'test', 'fest': 3})
+        response = self.client.post('/backend/u/conc/', {'client': 'test', 'id': 3})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Permission not granted', response.content.decode('utf-8'))
 
@@ -52,8 +52,7 @@ class UpdateConcertInfoTests(TestCase):
         client.delete_access = True
         client.save()
 
-        response = self.client.post('/backend/u/conc/', {'client': 'test',
-                                                         'festival': festival.pk, 'artist': 'test'})
+        response = self.client.post('/backend/u/conc/', {'client': 'test', 'id': concert.pk})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Permission not granted', response.content.decode('utf-8'))
 
@@ -77,8 +76,7 @@ class UpdateConcertInfoTests(TestCase):
         concert2.save()
         concert3 = create_concert(festival, 'testestest')
         concert3.save()
-        response = self.client.post('/backend/u/conc/', {'client': 'test',
-                                                         'festival': festival.pk, 'artist': 'tset'})
+        response = self.client.post('/backend/u/conc/', {'client': 'test', 'id': -1})
         self.assertEqual('Concert Not Found', response.content.decode('utf-8'))
 
     def test_invalid_fields(self):
@@ -98,8 +96,7 @@ class UpdateConcertInfoTests(TestCase):
 
         response = self.client.post('/backend/u/conc/',
                                     {'client': 'test',
-                                     'festival': festival.pk,
-                                     'old_artist': 'test',
+                                     'id': concert.pk,
                                      'artist':
                                          'testtestsetsetsetsetse\
                                          tsetsetsetsetsetsetsetsetsetsetsetsetsetsetsetsetsetsetsetstsetsetsetset\
@@ -107,7 +104,7 @@ class UpdateConcertInfoTests(TestCase):
                                          testetsetsetsettestsetsetsetsetsetsetsetsetsetsetsetsetsetsetsetsetsetsett'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Incorrect input', response.content.decode('utf-8'))
-        self.assertEqual(1, Concert.objects.filter(festival = festival, artist = 'test').count())
+        self.assertEqual(1, Concert.objects.filter(festival=festival, artist='test').count())
 
     def test_correct_input(self):
         """
@@ -127,8 +124,7 @@ class UpdateConcertInfoTests(TestCase):
 
         response = self.client.post('/backend/u/conc/',
                                     {'client': 'test',
-                                     'festival': festival.pk,
-                                     'old_artist': 'test',
+                                     'id': concert.pk,
                                      'stage': 2,
                                      'artist': 'tset'
                                      })
@@ -138,4 +134,4 @@ class UpdateConcertInfoTests(TestCase):
         self.assertTrue('artist:tset' in response_string)
         self.assertTrue('stage:2' in response_string)
         self.assertEqual(3, len(response_string.split('\n')))
-        self.assertEqual(1, Concert.objects.filter(festival = festival, artist = 'tset').count())
+        self.assertEqual(1, Concert.objects.filter(festival=festival, artist='tset').count())

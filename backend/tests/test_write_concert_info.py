@@ -20,11 +20,11 @@ class WriteConcertInfoTests(TestCase):
         response = self.client.post('/backend/w/conc/', {'festival': festival.pk,
                                                          'artist': 'test',
                                                          'start': timezone.datetime.utcnow() +
-                                                                  timezone.timedelta(days = 2,
-                                                                                     hours = 1),
+                                                                  timezone.timedelta(days=2,
+                                                                                     hours=1),
                                                          'end': timezone.datetime.utcnow() +
-                                                                timezone.timedelta(days = 2,
-                                                                                   hours = 2)})
+                                                                timezone.timedelta(days=2,
+                                                                                   hours=2)})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Client name not provided', response.content.decode('utf-8'))
 
@@ -45,11 +45,11 @@ class WriteConcertInfoTests(TestCase):
                                                          'festival': festival.pk,
                                                          'artist': 'test',
                                                          'start': timezone.datetime.utcnow() +
-                                                                  timezone.timedelta(days = 2,
-                                                                                     hours = 1),
+                                                                  timezone.timedelta(days=2,
+                                                                                     hours=1),
                                                          'end': timezone.datetime.utcnow() +
-                                                                timezone.timedelta(days = 2,
-                                                                                   hours = 2)})
+                                                                timezone.timedelta(days=2,
+                                                                                   hours=2)})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Permission not granted', response.content.decode('utf-8'))
 
@@ -72,14 +72,14 @@ class WriteConcertInfoTests(TestCase):
                                      'festival': festival.pk,
                                      'artist': 'test',
                                      'start': (timezone.datetime.utcnow() +
-                                               timezone.timedelta(days = 2,
-                                                                  hours = 1)).timestamp(),
+                                               timezone.timedelta(days=2,
+                                                                  hours=1)).timestamp(),
                                      'end': (timezone.datetime.utcnow() +
-                                             timezone.timedelta(days = 2,
-                                                                hours = 2)).timestamp()})
+                                             timezone.timedelta(days=2,
+                                                                hours=2)).timestamp()})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('OK', response.content.decode('utf-8'))
-        self.assertTrue(Concert.objects.filter(artist = 'test').exists())
+        self.assertTrue(Concert.objects.filter(artist='test').exists())
 
     def test_missing_fields(self):
         """
@@ -96,7 +96,7 @@ class WriteConcertInfoTests(TestCase):
                                      'artist': 'test'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Incorrect input', response.content.decode('utf-8'))
-        self.assertFalse(Concert.objects.filter(artist = 'test').exists())
+        self.assertFalse(Concert.objects.filter(artist='test').exists())
 
     def test_invalid_fields(self):
         """
@@ -120,14 +120,14 @@ class WriteConcertInfoTests(TestCase):
                                          testsetsetsetestestsetsetsetstsetsetsetsetsetsetsetsetsetsetsetsetsetstset\
                                          testetsetsetsettestsetsetsetsetsetsetsetsetsetsetsetsetsetsetsetsetsetsett',
                                      'start': (timezone.datetime.utcnow() +
-                                               timezone.timedelta(days = 2,
-                                                                  hours = 1)).timestamp(),
+                                               timezone.timedelta(days=2,
+                                                                  hours=1)).timestamp(),
                                      'end': (timezone.datetime.utcnow() +
-                                             timezone.timedelta(days = 2,
-                                                                hours = 2)).timestamp()})
+                                             timezone.timedelta(days=2,
+                                                                hours=2)).timestamp()})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Incorrect input', response.content.decode('utf-8'))
-        self.assertFalse(Concert.objects.filter(festival = festival).exists())
+        self.assertFalse(Concert.objects.filter(festival=festival).exists())
 
     def test_duplication(self):
         """
@@ -149,10 +149,10 @@ class WriteConcertInfoTests(TestCase):
                                      'festival': festival.pk,
                                      'artist': 'test',
                                      'start': (timezone.datetime.utcnow() +
-                                               timezone.timedelta(days = 2,
-                                                                  hours = 1)).timestamp(),
+                                               timezone.timedelta(days=2,
+                                                                  hours=1)).timestamp(),
                                      'end': (timezone.datetime.utcnow() +
-                                             timezone.timedelta(days = 2,
-                                                                hours = 2)).timestamp()})
+                                             timezone.timedelta(days=2,
+                                                                hours=2)).timestamp()})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Artist exists', response.content.decode('utf-8'))

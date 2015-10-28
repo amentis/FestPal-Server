@@ -71,7 +71,7 @@ class WriteFestivalInfoTests(TestCase):
                                      'official': False})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('OK', response.content.decode('utf-8'))
-        self.assertTrue(Festival.objects.filter(name = 'test').exists())
+        self.assertTrue(Festival.objects.filter(name='test').exists())
 
     def test_missing_fields(self):
         """
@@ -87,7 +87,7 @@ class WriteFestivalInfoTests(TestCase):
                                     {'client': 'test'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Incorrect input', response.content.decode('utf-8'))
-        self.assertFalse(Festival.objects.filter(name = 'test').exists())
+        self.assertFalse(Festival.objects.filter(name='test').exists())
 
     def test_invalid_fields(self):
         """
@@ -112,7 +112,7 @@ class WriteFestivalInfoTests(TestCase):
                                      'official': False})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Incorrect input', response.content.decode('utf-8'))
-        self.assertFalse(Festival.objects.filter(name = 'test').exists())
+        self.assertFalse(Festival.objects.filter(name='test').exists())
 
     def test_duplication(self):
         """

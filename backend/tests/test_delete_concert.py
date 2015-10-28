@@ -14,7 +14,7 @@ class DeleteConcertTests(TestCase):
 
         login(self.client)
 
-        response = self.client.post('/backend/d/conc/', {'fest': 0, 'artist': 'test'})
+        response = self.client.post('/backend/d/conc/', {'id': 0})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Client name not provided', response.content.decode('utf-8'))
 
@@ -29,7 +29,7 @@ class DeleteConcertTests(TestCase):
         client = create_client('test')
         client.delete_access = False
         client.save()
-        response = self.client.post('/backend/d/conc/', {'client': 'test', 'fest': 0, 'artist': 'test'})
+        response = self.client.post('/backend/d/conc/', {'client': 'test', 'id': 0})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Permission not granted', response.content.decode('utf-8'))
 
@@ -51,8 +51,7 @@ class DeleteConcertTests(TestCase):
         client = create_client('test')
         client.delete_access = True
         client.save()
-        response = self.client.post('/backend/d/conc/', {'client': 'test',
-                                                         'festival': festival.pk, 'artist': 'test'})
+        response = self.client.post('/backend/d/conc/', {'client': 'test', 'id': concert.pk})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('Permission not granted', response.content.decode('utf-8'))
 
@@ -91,11 +90,10 @@ class DeleteConcertTests(TestCase):
         client.save()
         festival = create_festival('test', user)
         festival.save()
-        create_concert(festival, 'test')
+        concert = create_concert(festival, 'test')
         create_concert(festival, 'testest')
         create_concert(festival, 'testestest')
-        response = self.client.post('/backend/d/conc/', {'client': 'test',
-                                                         'festival': festival.pk, 'artist': 'test'})
+        response = self.client.post('/backend/d/conc/', {'client': 'test', 'id': concert.pk})
         self.assertEqual(response.status_code, 200)
         self.assertEqual('OK', response.content.decode('utf-8'))
         self.assertEqual(2, Concert.objects.all().count())
